@@ -1,41 +1,49 @@
 const contentDiv = document.querySelector('.content');
-
+let individualDivs;
+let cssVar = document.querySelector(':root');
 let gridSize = 16;
 
-// gets proper width and height of square divs to fit in content section
-//changes a css variable
-
-let cssVar = document.querySelector(':root');
+const colorArray = ['blue', 'red', 'pink', 'orange', 'purple', 'green'];
 setCssHeightAndWidth();
 
-//640 value is from set height and width of grids container
 function setCssHeightAndWidth() {
     for (let i = 1; i <= (gridSize * gridSize); i++) {
         let div = document.createElement('div');
        contentDiv.appendChild(div);
     }
+
     cssVar.style.setProperty('--css-grid-size-w-h', (640 / gridSize + 'px'));
 
+    individualDivs = contentDiv.querySelectorAll('div');
+
+    individualDivs.forEach(function(soloDiv) {
+        soloDiv.addEventListener('mouseover', function() {
+            if (drawChoice === 'black') {
+                soloDiv.style.background = 'black';
+            } else if (drawChoice === 'white') {
+                soloDiv.style.background = 'white';
+            } else if (drawChoice === 'eraser') {
+                soloDiv.style.background = '#014b29';
+            } else if (drawChoice === 'rainbow') {
+                let randomColor = Math.floor(Math.random() * colorArray.length);
+                soloDiv.style.background = colorArray[randomColor];
+            }
+        });
+    });
     
 }
 
 
-const individualDivs = contentDiv.querySelectorAll('div');
-console.log(individualDivs);
+function removeOldGrid() {
+    while (contentDiv.hasChildNodes())
+    contentDiv.removeChild(contentDiv.firstChild)
+}
 
-individualDivs.forEach(function(soloDiv) {
-    soloDiv.addEventListener('mouseover', function() {
-        if (drawChoice === 'black') {
-            soloDiv.style.background = 'black';
-        } else if (drawChoice === 'white') {
-            soloDiv.style.background = 'white';
-        } else if (drawChoice === 'eraser') {
-            soloDiv.style.background = '#014b29';
-        }
 
-    });
-});
+//button functions below
+
 let drawChoice = 'white';
+
 
 const blackBtn = document.querySelector('#black');
 blackBtn.addEventListener('click', function() {
@@ -52,6 +60,17 @@ whiteBtn.addEventListener('click', function() {
     drawChoice = 'white';
 });
 
+const clearBtn = document.querySelector('#clear');
+clearBtn.addEventListener('click', function() {
+   removeOldGrid();
+   setCssHeightAndWidth();
+});
+
+const rainbowBtn = document.querySelector('#rainbow');
+rainbowBtn.addEventListener('click', function () {
+    drawChoice = 'rainbow';
+});
+
 const changeBtn = document.querySelector('#change');
 changeBtn.addEventListener ('click', function(changecheck) {
     let promptAnswer = +prompt('The grid is currently ' + gridSize + ' by ' + gridSize + '. Please the value of your new desired grid');
@@ -63,6 +82,8 @@ changeBtn.addEventListener ('click', function(changecheck) {
         alert('please enter only one number');
     } else {
         gridSize = promptAnswer;
+        removeOldGrid();
+        setCssHeightAndWidth();
     }
 });
 
